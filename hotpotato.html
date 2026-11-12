@@ -23,7 +23,7 @@ label{display:block;margin:14px 0}input[type=number]{width:70px;padding:8px;font
 const file=document.getElementById('file'),audio=document.getElementById('audio'),start=document.getElementById('start'),stop=document.getElementById('stop'),status=document.getElementById('status');
 let timer=null,url=null;
 function reset(){clearTimeout(timer);timer=null;audio.pause();start.disabled=!url;stop.disabled=true;}
-file.addEventListener('change',()=>{reset();if(url)URL.revokeObjectURL(url);url=file.files[0]?URL.createObjectURL(file.files[0]):null;audio.src=url||'';status.textContent=url?'Ready to play!':'Choose a song';});
+file.addEventListener('change',()=>{reset();if(url)URL.revokeObjectURL(url);url=file.files[0]?URL.createObjectURL(file.files[0]):null;audio.src=url||'';start.disabled=!url;status.textContent=url?'Ready to play!':'Choose a song';});
 start.addEventListener('click',async()=>{
 if(!url)return;
 const min=Number(document.getElementById('min').value),max=Number(document.getElementById('max').value);
