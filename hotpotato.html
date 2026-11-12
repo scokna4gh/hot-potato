@@ -28,7 +28,7 @@ start.addEventListener('click',async()=>{
 if(!url)return;
 const min=Number(document.getElementById('min').value),max=Number(document.getElementById('max').value);
 if(!Number.isFinite(min)||!Number.isFinite(max)||min<2||max<min||max>600){status.textContent='Check your time range (2–600 seconds).';return;}
-reset();audio.currentTime=0;audio.loop=true;
+reset();audio.loop=true;
 try{await audio.play();}catch(e){status.textContent='Unable to play this file. Try another song.';return;}
 status.textContent='🎶 PASS IT!';start.disabled=true;stop.disabled=false;
 const seconds=min+Math.random()*(max-min);
