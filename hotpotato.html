@@ -74,7 +74,7 @@ input[type=number] {
 #status {
   font-size: 2rem;
   font-weight: 800;
-  min-height: 2rem;
+  min-height: 3rem;
   margin: 18px 0;
 }
 
@@ -221,7 +221,7 @@ start.addEventListener('click', async () => {
     max < min ||
     max > 300
   ) {
-    status.innerHTML = 'Check your time range.<br>Whole numbers only<br>from 5 – 300 seconds.';
+    status.innerHTML = 'Please enter whole numbers<br>from 5 – 300 seconds.';
     return;
   }
 
