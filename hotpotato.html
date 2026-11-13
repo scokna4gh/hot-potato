@@ -107,12 +107,12 @@ small { display: block; line-height: 1.5; }
 <!-- Random stop settings -->
 <label>
   Minimum seconds
-  <input id="min" type="number" min="5" max="300" value="10">
+  <input id="min" type="number" step="1" min="5" max="300" value="10">
 </label>
 
 <label>
   Maximum seconds
-  <input id="max" type="number" min="5" max="300" value="30">
+  <input id="max" type="number" step="1" min="5" max="300" value="30">
 </label>
 
 <div id="status" role="status" aria-live="polite">
@@ -215,8 +215,8 @@ start.addEventListener('click', async () => {
   const max = Number(document.getElementById('max').value);
 
   if (
-    !Number.isFinite(min) ||
-    !Number.isFinite(max) ||
+    !Number.isInteger(min) ||
+    !Number.isInteger(max) ||
     min < 5 ||
     max < min ||
     max > 300
