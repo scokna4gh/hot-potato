@@ -221,7 +221,7 @@ start.addEventListener('click', async () => {
     max < min ||
     max > 300
   ) {
-    status.textContent = 'Check your time range (5–300 seconds).';
+    status.innerHTML = 'Check your time range.<br>Whole numbers only<br>from 5 – 300 seconds.';
     return;
   }
 
