@@ -217,11 +217,11 @@ start.addEventListener('click', async () => {
   if (
     !Number.isFinite(min) ||
     !Number.isFinite(max) ||
-    min < 2 ||
+    min < 5 ||
     max < min ||
-    max > 600
+    max > 300
   ) {
-    status.textContent = 'Check your time range (2–600 seconds).';
+    status.textContent = 'Check your time range (5–300 seconds).';
     return;
   }
 
