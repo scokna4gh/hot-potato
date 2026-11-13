@@ -1,44 +1,220 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hot Potato Music Game</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hot Potato Game</title>
 <link rel="apple-touch-icon" href="hotpotato.png">
 <link rel="icon" type="image/png" href="hotpotato.png">
+
 <style>
-body{font-family:system-ui,-apple-system,sans-serif;background:#fff3dc;color:#39210c;text-align:center;margin:0;padding:30px 16px}
-main{max-width:480px;margin:auto}h1{font-size:2.5rem}button{font-size:1.5rem;padding:18px 28px;border:0;border-radius:16px;background:#d95522;color:white;font-weight:bold;margin:12px;cursor:pointer}
-button:disabled{opacity:.45}input{font-size:1rem;max-width:100%}.controls{background:white;border-radius:20px;padding:20px;margin-top:20px}
-label{display:block;margin:14px 0}input[type=number]{width:70px;padding:8px;font-size:1.1rem}
-#status{font-size:2rem;font-weight:800;min-height:3rem}small{display:block;line-height:1.5}
+body {
+  font-family: system-ui,-apple-system,sans-serif;
+  background: #fff3dc;
+  color: #39210c;
+  text-align: center;
+  margin: 0;
+  padding: 30px 16px;
+}
+main { max-width: 480px; margin: auto; }
+button {
+  font-size: 1.5rem;
+  padding: 18px 28px;
+  border: 0;
+  border-radius: 16px;
+  background: #d95522;
+  color: white;
+  font-weight: bold;
+  margin: 12px;
+  cursor: pointer;
+}
+button:disabled { opacity: .45; }
+input { font-size: 1rem; max-width: 100%; }
+.controls {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+}
+label { display: block; margin: 14px 0; }
+input[type=number] {
+  width: 70px;
+  padding: 8px;
+  font-size: 1.1rem;
+}
+#status {
+  font-size: 2rem;
+  font-weight: 800;
+  min-height: 3rem;
+}
+#default {
+  font-size: 1rem;
+  padding: 12px 18px;
+  background: #82613d;
+}
+small { display: block; line-height: 1.5; }
 </style>
 </head>
-<body><main>
+
+<body>
+<main>
 <img src="hotpotato.png" alt="Hot Potato!"
      style="width:160px;height:160px;border-radius:24px;">
+
 <p>Start the music, pass the potato, and wait for the music to stop!</p>
+
 <div class="controls">
-<label>Choose music from your device<br><input id="file" type="file"></label>
-<label>Minimum seconds <input id="min" type="number" min="2" max="600" value="10"></label>
-<label>Maximum seconds <input id="max" type="number" min="2" max="600" value="30"></label>
-<div id="status" role="status" aria-live="polite">Choose a song</div>
-<button id="start" disabled>▶ START</button><button id="stop" disabled>■ STOP</button>
-<small>Each round stops at a random time. The timer stays hidden so nobody gets a clue. Keep Chrome open and your screen awake while playing.</small>
-</div><audio id="audio" preload="auto"></audio></main>
+
+<label>
+  Choose music from your device
+  <input id="file" type="file" accept=".mp3,.m4a,.aac,.wav,.ogg,.flac">
+</label>
+
+<button id="default" type="button">♫ Default Music</button>
+
+<label>
+  Minimum seconds
+  <input id="min" type="number" min="2" max="600" value="10">
+</label>
+
+<label>
+  Maximum seconds
+  <input id="max" type="number" min="2" max="600" value="30">
+</label>
+
+<div id="status" role="status" aria-live="polite">
+  Ready to play!
+</div>
+
+<button id="start" type="button">▶ START</button>
+<button id="stop" type="button" disabled>■ STOP</button>
+
+<small>
+Each round stops at a random time. The timer stays hidden so nobody gets a clue. Keep the game open and your screen awake while playing.
+</small>
+
+</div>
+<audio id="audio" preload="auto" loop></audio>
+</main>
+
 <script>
-const file=document.getElementById('file'),audio=document.getElementById('audio'),start=document.getElementById('start'),stop=document.getElementById('stop'),status=document.getElementById('status');
-let timer=null,url=null;
-function reset(){clearTimeout(timer);timer=null;audio.pause();start.disabled=!url;stop.disabled=true;}
-file.addEventListener('change',()=>{reset();if(url)URL.revokeObjectURL(url);url=file.files[0]?URL.createObjectURL(file.files[0]):null;audio.src=url||'';start.disabled=!url;status.textContent=url?'Ready to play!':'Choose a song';});
-start.addEventListener('click',async()=>{
-if(!url)return;
-const min=Number(document.getElementById('min').value),max=Number(document.getElementById('max').value);
-if(!Number.isFinite(min)||!Number.isFinite(max)||min<2||max<min||max>600){status.textContent='Check your time range (2–600 seconds).';return;}
-reset();audio.loop=true;
-try{await audio.play();}catch(e){status.textContent='Unable to play this file. Try another song.';return;}
-status.textContent='🎶 PASS IT!';start.disabled=true;stop.disabled=false;
-const seconds=min+Math.random()*(max-min);
-timer=setTimeout(()=>{reset();status.textContent='🛑 STOP! Who has the potato?';},seconds*1000);
+const file = document.getElementById('file');
+const audio = document.getElementById('audio');
+const start = document.getElementById('start');
+const stop = document.getElementById('stop');
+const defaultButton = document.getElementById('default');
+const status = document.getElementById('status');
+
+const defaultSong = 'hotpotato.mp3';
+
+let timer = null;
+let url = null;
+let playing = false;
+let session = 0;
+
+// Initialize the built-in soundtrack.
+audio.src = defaultSong;
+audio.loop = true;
+
+// Stop playback without resetting the song position.
+function reset() {
+  session++;
+  clearTimeout(timer);
+  timer = null;
+  audio.pause();
+  playing = false;
+  start.disabled = false;
+  stop.disabled = true;
+}
+
+// Select a song from the device.
+file.addEventListener('change', () => {
+  if (!file.files.length) return;
+
+  reset();
+
+  if (url) URL.revokeObjectURL(url);
+
+  url = URL.createObjectURL(file.files[0]);
+  audio.src = url;
+  audio.load();
+
+  status.textContent = 'Ready to play!';
 });
-stop.addEventListener('click',()=>{reset();status.textContent='Stopped. Ready for another round!';});
-</script></body></html>
+
+// Return to the built-in soundtrack.
+defaultButton.addEventListener('click', () => {
+  reset();
+
+  if (url) {
+    URL.revokeObjectURL(url);
+    url = null;
+  }
+
+  file.value = '';
+  audio.src = defaultSong;
+  audio.load();
+
+  status.textContent = 'Ready to play!';
+});
+
+// Begin a round.
+start.addEventListener('click', async () => {
+  if (playing || start.disabled) return;
+
+  const min = Number(document.getElementById('min').value);
+  const max = Number(document.getElementById('max').value);
+
+  if (
+    !Number.isFinite(min) ||
+    !Number.isFinite(max) ||
+    min < 2 ||
+    max < min ||
+    max > 600
+  ) {
+    status.textContent = 'Check your time range (2–600 seconds).';
+    return;
+  }
+
+  reset();
+  const currentSession = session;
+
+  // Disable Start while playback is beginning.
+  start.disabled = true;
+
+  try {
+    await audio.play();
+  } catch (e) {
+    if (currentSession !== session) return;
+    start.disabled = false;
+    status.textContent =
+      'Unable to play this song. Try choosing another file.';
+    return;
+  }
+
+  // Ignore playback that was canceled while starting.
+  if (currentSession !== session) return;
+
+  playing = true;
+  status.textContent = '🎶 PASS IT!';
+  stop.disabled = false;
+
+  const seconds = min + Math.random() * (max - min);
+
+  timer = setTimeout(() => {
+    if (currentSession !== session) return;
+
+    reset();
+    status.innerHTML = '🛑 STOP!<br>Who has the potato?';
+  }, seconds * 1000);
+});
+
+// Manually stop a round.
+stop.addEventListener('click', () => {
+  reset();
+  status.textContent = 'Stopped. Ready for another round!';
+});
+</script>
+</body>
+</html>
