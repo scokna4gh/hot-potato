@@ -252,14 +252,14 @@ start.addEventListener('click', async () => {
     if (currentSession !== session) return;
 
     reset();
-    status.innerHTML = '🛑 STOP!Who has the potato?';
+    status.innerHTML = '🛑 STOP!<br>Who has the potato?';
   }, seconds * 1000);
 });
 
 // Manually stop a round.
 stop.addEventListener('click', () => {
   reset();
-  status.innerHTML = 'Stopped.<br>Ready for another round!';
+  status.innerHTML = 'Stopped.<br>Tap Start for another round!';
 });
 </script>
 </body>
