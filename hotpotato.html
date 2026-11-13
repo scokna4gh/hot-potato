@@ -235,8 +235,8 @@ start.addEventListener('click', async () => {
   } catch (e) {
     if (currentSession !== session) return;
     start.disabled = false;
-    status.textContent =
-      'Unable to play this song. Try choosing another file.';
+    status.innerHTML =
+      'Unable to play this song.<br>Try choosing another file.';
     return;
   }
 
@@ -252,14 +252,14 @@ start.addEventListener('click', async () => {
     if (currentSession !== session) return;
 
     reset();
-    status.innerHTML = '🛑 STOP!<br>Who has the potato?';
+    status.innerHTML = '🛑 STOP!Who has the potato?';
   }, seconds * 1000);
 });
 
 // Manually stop a round.
 stop.addEventListener('click', () => {
   reset();
-  status.textContent = 'Stopped. Ready for another round!';
+  status.innerHTML = 'Stopped.<br>Ready for another round!';
 });
 </script>
 </body>
